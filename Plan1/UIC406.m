@@ -1,10 +1,11 @@
-load('套跑6，滞留最小，当前客流分配结果11.mat');
+load('result.mat');
 Arrival_1=Arrival1;
 Arrival_5=Arrival5;
 Departure_1=Departure1;
 Departure_5=Departure5;
 Yasuo=zeros(1,39);
 kk=zeros(1,39);
+%%%The method is the same as the algorithm introduced in Fig.7. 
 ii=0;
 for i=1:19
     ii=ii+1;
@@ -12,7 +13,7 @@ for i=1:19
     if VCor15(i,1)==0
         Yasuo(ii)=min(Departure_5(i,18:26)-Departure_1(i,16:24))-30;
         if Yasuo(ii)<0
-            disp('出错');
+            disp('Warning!');
         else
             if Yasuo(ii)>0
                 Departure_5(i,:)=Departure_5(i,:)-Yasuo(ii);
@@ -28,7 +29,7 @@ for i=1:19
         if VCor15(i,1)==1
             Yasuo(ii)=min(Departure_5(i,18:26)-Departure_1(i,16:24))-120;
         if Yasuo(ii)<0
-            disp('出错');
+            disp('Warning!');
         else
             if Yasuo(ii)>0
                 Departure_5(i,:)=Departure_5(i,:)-Yasuo(ii);
@@ -42,7 +43,7 @@ for i=1:19
             if VCor15(i,1)==0
                  Yasuo(ii)=min([Departure_5(i,18:26)-Departure_1(i,16:24)-30,Departure_5(i,1:end-1)-Departure_5(i-1,1:end-1)-120]);
                  if Yasuo(ii)<0
-                     disp('出错');
+                     disp('Warning!');
                  else
                      if Yasuo(ii)>0
                          Departure_5(i,:)=Departure_5(i,:)-Yasuo(ii);
@@ -58,7 +59,7 @@ for i=1:19
                  if VCor15(i,1)==1
                      Yasuo(ii)=min([Departure_5(i,18:26)-Departure_1(i,16:24)-120,Departure_5(i,1:end-1)-Departure_5(i-1,1:end-1)-120]);
                      if Yasuo(ii)<0
-                         disp('出错');
+                         disp('Warning!');
                      else
                          if Yasuo(ii)>0
                               Departure_5(i,:)=Departure_5(i,:)-Yasuo(ii);
@@ -73,7 +74,7 @@ for i=1:19
     if VCor15(i+1,2)==0
         Yasuo(ii)=min([Departure_1(i+1,16:24)-Departure_5(i,18:26)-30,Departure_1(i+1,1:end-1)-Departure_1(i,1:end-1)-120]);
         if Yasuo(ii)<0
-            disp('出错');
+            disp('Warning!');
         else
             if Yasuo(ii)>0
                 Departure_1(i+1,:)=Departure_1(i+1,:)-Yasuo(ii);
@@ -89,7 +90,7 @@ for i=1:19
         if VCor15(i+1,2)==1
             Yasuo(ii)=min([Departure_1(i+1,16:24)-Departure_5(i,18:26)-120,Departure_1(i+1,1:end-1)-Departure_1(i,1:end-1)-120]);
         if Yasuo(ii)<0
-            disp('出错');
+            disp('Warning!');
         else
             if Yasuo(ii)>0
                 Departure_1(i+1,:)=Departure_1(i+1,:)-Yasuo(ii);
@@ -104,7 +105,7 @@ ii=ii+1;
     if VCor15(i,1)==0
         Yasuo(ii)=min([Departure_5(i,18:26)-Departure_1(i,16:24)-30,Departure_5(i,1:end-1)-Departure_5(i-1,1:end-1)-120]);
         if Yasuo(ii)<0
-            disp('出错');
+            disp('Warning!');
         else
             if Yasuo(ii)>0
                 Departure_5(i,:)=Departure_5(i,:)-Yasuo(ii);
@@ -120,7 +121,7 @@ ii=ii+1;
         if VCor15(i,1)==1
             Yasuo(ii)=min([Departure_5(i,18:26)-Departure_1(i,16:24)-120,Departure_5(i,1:end-1)-Departure_5(i-1,1:end-1)-120]);
         if Yasuo(ii)<0
-            disp('出错');
+            disp('Warning!');
         else
             if Yasuo(ii)>0
                 Departure_5(i,:)=Departure_5(i,:)-Yasuo(ii);

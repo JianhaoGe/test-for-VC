@@ -2,7 +2,7 @@ function [Headway15MAX,ConHeadway15,Headway15MIN,VCor15]=MakeDifferentLineHeadwa
 s=size(Arrival1);
 num_train=s(1,1);
 ConHeadway15=sdpvar(num_train,length(CommonStopSet2)*2);
-%虚拟编组决策变量，前列代表是否与前车编组，后列代表是否与后车编组，均以三号线列车为对象
+%Virtual coupling decision variables for the trains of Line 3, where the first row represents whether it is coupled with the front train and the second row represents whether it is coupled with the rear train
 VCor15=binvar(num_train,2);
 Headway15MIN=(MinH+40)*ones(num_train,length(CommonStopSet2)*2);
 Headway15MAX=(MaxH+40)*ones(num_train,length(CommonStopSet2)*2);

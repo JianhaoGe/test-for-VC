@@ -1,2 +1,0 @@
-function Cremain_right = MakeRemainCapacityinVehicle(Cmax,Qinvehicle_left)
-Cremain_right=Cmax-Qinvehicle_left;

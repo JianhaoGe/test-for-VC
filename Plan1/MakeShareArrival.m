@@ -7,7 +7,7 @@ s5=size(Departure5);
 totaltrain5=s5(1,1);
 totalstation5=s5(1,2);
 CommonStop=8;
-%%%生成三四号线共线段的间隔参数
+%%%Generate train intervals between Shanghai Metro Line 3 and Line 4 at stations on the collinear corridor
 Z3_Line1=sdpvar(totaltrain1*(CommonStop),(ETime-STime)/Timestamp);
 za1=[];
 for i=1:totaltrain1
@@ -32,9 +32,7 @@ Z4_Line5=sdpvar(totaltrain5*(CommonStop),(ETime-STime)/Timestamp);
 Z4_Line5MIN=-M*(1-X3_Line5(za5,:));
 Z4_Line5MAX=M*(1-X3_Line5(za5,:));
 
-%%%生成三四号线共线段是否虚拟编组的相关参数，四号线被分割为了前车为三号线长交路与前车为三号线短交路两种情况
-%%%此处为模型的线性化
-%%%若与前车进行虚拟编组，则到达乘客数加上Z5
+%%%If it is virtually coupled with its front train, the number of arriving passenger needs to add Z5.
 
 cc=0;
 for i=1:totaltrain1
@@ -66,7 +64,7 @@ Z6_Line5=sdpvar(totaltrain5*(CommonStop),(ETime-STime)/Timestamp);
 Z6_Line5MIN=-M*repmat(VC_Line5,1,(ETime-STime)/Timestamp);
 Z6_Line5MAX=M*repmat(VC_Line5,1,(ETime-STime)/Timestamp);
 
-%%%若与后车进行虚拟编组则到达乘客数加上Z7
+%%%If it is virtually coupled with its rear train, the number of arriving passenger needs to add Z7.
 Z7_Line1=sdpvar(totaltrain1*(CommonStop),(ETime-STime)/Timestamp);
 Z7_Line1MIN=-M*(1-repmat(VC_Line5,1,(ETime-STime)/Timestamp));
 Z7_Line1MAX=M*(1-repmat(VC_Line5,1,(ETime-STime)/Timestamp));
@@ -88,7 +86,7 @@ QArrival12=sdpvar(totaltrain1,CommonStop);
 Waittime12=sdpvar(totaltrain1,CommonStop);
 QArrival52=sdpvar(totaltrain5,CommonStop);
 Waittime52=sdpvar(totaltrain5,CommonStop);
-%%%根据设定的三号线长交路、四号线、三号线短交路、四号线的开行方案，可以直接得到列车的前车与后车，计算所需间隔
+%%%According to the prepared train line set, we can directly obtain which trains are the front and rear trains of this train. In this way, train intervals can be calculated easily.
 kk=0;
 for i=1:totaltrain1
     for k=16:23
@@ -113,7 +111,7 @@ for i=1:totaltrain5
     end
 end
 
-%%%生成共线段的Arrivalshare到达
+%%%Generate the arriving passengers who can both take trains of Shanghai Metro Line 3 and Line 4
 kk=0;
 for i=1:totaltrain1
     for k=16:23

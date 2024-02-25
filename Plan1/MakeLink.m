@@ -4,18 +4,18 @@ s=size(Arrival5);
 num_train=s(1,1);
 ConLink5=sdpvar(num_train,num_train,'full');
 for i=1:num_train
-    ConLink5(:,i)=Arrival5(i,1)-Arrival5(:,1);%四号线任意两车在首发站的间隔
+    ConLink5(:,i)=Arrival5(i,1)-Arrival5(:,1);%The interval between any two train services of Line5 at the starting station.
 end
-AllRunningtime5=Arrival5(:,end)-Arrival5(:,1);%四号线所有车的总运行时间
+AllRunningtime5=Arrival5(:,end)-Arrival5(:,1);%The total running time of train services of Line5.
 arf1=binvar(num_train,num_train,'full');
 arf2=binvar(num_train,num_train,'full');
 arf3=binvar(num_train,num_train,'full');
-%%%当四号线两列车的终点站发车及到站在0-30s内时，允许套跑
+%%Since Shanghai Metro Line 4 is a loop line, i.e. here Line5 has the same station as its starting and ending station, it is determined that if two train services of Line5 departs from the terminal station and arrives at the terminal station within 0-30 seconds, they are assumed to be connected.
 arfMIN=0;
 arfMAX=30;
 for j=1:num_train
     for i=1:num_train
-        %%%根据在任意两列四号线在首站的发车间隔与前车的全程运行时长的差来判断是否套跑
+        %%%Determine whether the two train services are connnected based on the difference between the departure interval at the starting station and the total running time of the preceding train
         xx(i,j)=AllRunningtime5(i)-ConLink5(i,j);
         arf1left(i,j)=(xx(i,j)-arfMIN)/M;
         arf1right(i,j)=1+(xx(i,j)-arfMIN)/M;

@@ -31,14 +31,14 @@ Waittime11=sdpvar(totaltrain1,(totalstation1-1));
 QArrival51=sdpvar(totaltrain5,(totalstation5-1));
 Waittime51=sdpvar(totaltrain5,(totalstation5-1));
 
-%%%根据设定好的开行方案，得到只能乘坐某一列车的乘客的等待时间
+%%%According to the train line set, obtain the number of arriving passengers who can only take a certain train
 for i=1:totaltrain1
     cc=(i-1)*(totalstation1-1);
     for k=1:totalstation1-1
         cc=cc+1;
         for m=1:(ETime-STime)/Timestamp
             if i==1
-                Z1_Line1(cc,m)=Z2_Line1(cc,m)+180;%第一列车取到站前三分钟的客流
+                Z1_Line1(cc,m)=Z2_Line1(cc,m)+180;%The number of arriving passengers of the first train obtains the passenger flow three minutes before the first train arrives at the station
             else 
                 Z1_Line1(cc,m)=Z2_Line1(cc,m)+Departure1(i,k)-Departure1(i-1,k);
             end
@@ -56,7 +56,6 @@ for i=1:totaltrain1
 end
 
 
-%%%在四号线环线上，前车为本线列车
 cc=0;
 for i=1:totaltrain5
     for k=1:totalstation5-1

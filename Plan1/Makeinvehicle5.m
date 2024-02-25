@@ -13,8 +13,7 @@ ZZ1min=-M*arf3;
 ZZ2=sdpvar(totaltrain5,totaltrain5);
 ZZ2max=M*(1-arf3);
 ZZ2min=-M*(1-arf3);
-%%%根据套跑情况，若两列车套跑，则后车在起始站的车内乘客信息继承所套跑的列车，否则为0
-%%%此处ZZ1为套跑决策变量*车内乘客数量的非线性变量线性化过程
+%%According to the train connection relationship, if two trains of Line5 are connected, the passenger information of the following train in the starting station inherits the front train at its ending station, otherwise all the number of passengers are 0.
 Qinvehicle_line5_right(:,1)=0;
 for k=2:27
     Qinvehicle_line5_right(1,k)=Qinvehicle_line5_right(1,k-1)+Qboard_line5_left(1,k-1)-Qalight_line5_left(1,k);
