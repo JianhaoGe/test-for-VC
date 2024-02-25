@@ -1,4 +1,4 @@
-function [Qinvehicle_line5_right,ZZ1,ZZ1max,ZZ1min,ZZ2,ZZ2max,ZZ2min] = Makeinvehicle5(Qboard_line5_left,Qalight_line5_left,arf3)
+function [Qinvehicle_line5_right,ZZ1,ZZ1max,ZZ1min,ZZ2,ZZ2max,ZZ2min] = Makeinvehicleloop(Qboard_line5_left,Qalight_line5_left,arf3)
 s=size(Qboard_line5_left);
 totaltrain5=s(1,1);
 totalstation5=s(1,2)+1;
