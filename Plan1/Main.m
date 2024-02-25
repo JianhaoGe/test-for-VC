@@ -14,13 +14,14 @@
 %% MaxH          -- Maximum headway time of successive trains;
 %% MinVC         -- Minimum headway time of successive trains of different lines when they are virtual coupled;
 %% MaxVC         -- Maximum headway time of successive trains of different lines when they are virtual coupled;
-%% Totaltrain1   -- The total number of Line 1;
+%% Totaltrain1   -- The total number of Line 1; 
 %% Totalstation1 -- The total station number of Line 1;
 %% Totaltrain2   -- The total number of Line 2;
 %% Totalstation2 -- The total station number of Line 2;
 %% Sharestation  -- The number of shared stations;
 %% Starttime     -- The starting point of research time period;
 %% Endtime       -- The ending point of research time period;
+%% Note: Here, Totaltrain1 = Totaltrain2.
 
 %% Matrix:
 %% MinR1(Totalstation1-1,1)      -- The minimum running time of each section of Line 1;
@@ -58,8 +59,7 @@ Departure2=intvar(Totaltrain2,Totalstation2);
 [Headway2MAX,ConHeadway2,Headway2MIN]=MakeSameHeadwayConstraints(Line2,Arrival2,Departure2,MinH,MaxH);
 
 %%Headway variables for trains of different lines and general the VC variable
-[Headway12MAX,ConHeadway12,Headway12MIN,VCor12]=MakeDifferentLineHeadwayConstraints(Line1,Arrival1,Departure1,Line2,Arrival2,Departure2,MinH,MaxH,CommonStopSet2);
-VCnot12=binvar(Totaltrain2,2);
+[Headway12MAX,ConHeadway12,Headway12MIN,VCor12,VCnot12]=MakeDifferentLineHeadwayConstraints(Line1,Arrival1,Departure1,Line2,Arrival2,Departure2,MinH,MaxH,CommonStopSet2);
 
 %%variables to form loop train services for Line2
 %%Generate the connection matrix for loop train services
@@ -96,10 +96,11 @@ CTimetable=[
     ConHeadway2<=Headway2MAX;
     
     %%Constraints for VC headway (Constraint 9-13)
-    Headway12MIN.*VCor12All+MinVC.*VCor12All<=ConHeadway12;
-    ConHeadway12<=Headway12MAX.*VCor12All+MinVC.*VCnot12All;
-    VCor12(:,1)+VCor12(:,2)>=ones(Totaltrain1,1);
+    Headway12MIN.*VCor12All+MinVC.*VCnot12All<=ConHeadway12;
+    ConHeadway12<=Headway12MAX.*VCor12All+MaxVC.*VCnot12All;
+    VCor12(:,1)+VCor12(:,2)>=ones(Totaltrain1,1); %% Trains that do not undergo virtual coupling are allowed.
     VCor12+VCnot12==ones(Totaltrain1,2);
+    
     %%Constraints for loop-route train services (Constraint 6-8)
     arf1left<=arf1;
     arf1<=arf1right;
