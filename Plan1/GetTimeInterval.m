@@ -4,10 +4,6 @@ s=size(Departure);
 totaltrain=s(1,1);
 totalstation=s(1,2);
 
-
-
-%% 
-
 X3=binvar(totaltrain*(totalstation-1),(Etime-Stime)/Timestamp);
 X3left=sdpvar(totaltrain,totalstation-1);
 X3right=sdpvar(totaltrain,totalstation-1);
