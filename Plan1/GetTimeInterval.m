@@ -8,6 +8,7 @@ X3=binvar(totaltrain*(totalstation-1),(Etime-Stime)/Timestamp);
 X3left=sdpvar(totaltrain,totalstation-1);
 X3right=sdpvar(totaltrain,totalstation-1);
 
+%% The calculation of X3 is the same as it is shown in Constraints (30-32)
 cc=0;
 for i=1:totaltrain
     for k=1:totalstation-1
