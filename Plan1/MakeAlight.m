@@ -1,4 +1,4 @@
-function [Qalight_Line1_right,Qalight_Line5_right,ZZ3,ZZ3min,ZZ3max,ZZ4,ZZ4min,ZZ4max]=Makealight2(Departure1,Qboard_line1_left,Rate1,Departure5,Qboard_line5_left,Rate5,arf3)
+function [Qalight_Line1_right,Qalight_Line5_right,ZZ3,ZZ3min,ZZ3max,ZZ4,ZZ4min,ZZ4max]=MakeAlight(Departure1,Qboard_line1_left,Rate1,Departure5,Qboard_line5_left,Rate5,arf3)
 s1=size(Departure1);
 totaltrain1=s1(1,1);
 totalstation1=s1(1,2);
