@@ -21,6 +21,10 @@
 %% Sharestation  -- The number of shared stations;
 %% Starttime     -- The starting point of research time period;
 %% Endtime       -- The ending point of research time period;
+%% MinLink       -- The minimum total times of connected train service pairs of Line 2;
+%% STime         -- The starting point of passenger OD data;
+%% ETime         -- The ending point of passenger OD data;
+%% Timestamp     -- The length of a time inteval (The granularity of passenger OD data);
 %% Note: Here, Totaltrain1 = Totaltrain2.
 
 %% Matrix:
@@ -45,6 +49,21 @@ Arrival1=intvar(Totaltrain1,Totalstation1);
 Departure1=intvar(Totaltrain1,Totalstation1);
 Arrival2=intvar(Totaltrain2,Totalstation2);
 Departure2=intvar(Totaltrain2,Totalstation2);
+
+Cremain_line1_left=sdpvar(Totaltrain1,Totalstation1);
+Qboard_line1_left=sdpvar(Totaltrain1,Totalstation1-1);
+Qinvehicle_line1_left=sdpvar(Totaltrain1,Totalstation1);
+Qstranded_line1_left=sdpvar(Totaltrain1,Totalstation1-1);
+Qwait_line1_left=sdpvar(Totaltrain1,Totalstation1-1);
+QArrival_Line1_left=sdpvar(Totaltrain1,Totalstation1-1);
+Qalight_line1_left=sdpvar(Totaltrain1,Totalstation1);
+Cremain_line2_left=sdpvar(Totaltrain2,Totalstation2);
+Qboard_line2_left=sdpvar(Totaltrain2,Totalstation2-1);
+Qinvehicle_line2_left=sdpvar(Totaltrain2,Totalstation2);
+Qstranded_line2_left=sdpvar(Totaltrain2,Totalstation2-1);
+Qwait_line2_left=sdpvar(Totaltrain2,Totalstation2-1);
+QArrival_Line2_left=sdpvar(Totaltrain2,Totalstation2-1);
+Qalight_line2_left=sdpvar(Totaltrain2,Totalstation2);
 
 %% Timetabling constraints
 
@@ -89,19 +108,19 @@ CTimetable=[
     Dwelltime2MIN<=ConDwelltime2;
     ConDwelltime2<=Dwelltime2MAX;
     
-    %% Constraints for train headway (Constraint 2)
+    %% Constraints for train headway (Constraint 5)
     Headway1MIN<=ConHeadway1;
     ConHeadway1<=Headway1MAX;
     Headway2MIN<=ConHeadway2;
     ConHeadway2<=Headway2MAX;
     
     %% Constraints for VC headway (Constraint 9-13)
-    Headway12MIN.*VCor12All+MinVC.*VCnot12All<=ConHeadway12;
-    ConHeadway12<=Headway12MAX.*VCor12All+MaxVC.*VCnot12All;
+    Headway12MIN.*repmat(VCor12,1,Sharestation)+MinVC.*repmat(VCnot12,1,Sharestation)<=ConHeadway12;
+    ConHeadway12<=Headway12MAX.*repmat(VCor12,1,Sharestation)+MaxVC.*repmat(VCnot12,1,Sharestation);
     VCor12(:,1)+VCor12(:,2)>=ones(Totaltrain1,1); %% Trains that do not undergo virtual coupling are allowed.
     VCor12+VCnot12==ones(Totaltrain1,2);
     
-    %% Constraints for loop-route train services (Constraint 6-8)
+    %% Constraints for loop-route train services (Constraint 6-7)
     arf1left<=arf1;
     arf1<=arf1right;
     arf2left<=arf2;
@@ -110,55 +129,42 @@ CTimetable=[
     arf3<=arf3right;
     L1min<=L1;
     L1<=L1max;
-    sum(arf3(1,:))==1;
-    sum(arf3(2,:))==1;
-    sum(arf3(3,:))==1;
-    sum(arf3(4,:))==1;
-    sum(arf3(2,:))==1;
-    sum(arf3(6,:))==1;%%N_L^min=6 in constraint 8
     ];
+
+%% Constraint 8
+for i=1:MinLink
+    CTimetable=[
+    CTimetable;
+    sum(arf3(i,:))==1;
+    ];
+end
+
+
 disp("Timetabling constraints finished");
 
 %% Passenger assignment constraints
-%%Passenger data input
-STime=Starttime;
-ETime=11*3600;
-Timestamp=300;
+
 load('PassengerDown.mat');
-bs=1;%%magnification rate. In this paper, we use 1 and 1.2 times to test the model.
-%%ArrivalRate, each dimension separately represents passengers' origin station and its arrival time period (divided every 300 seconds)
-ArrivalRate1=ArrivalRate1*bs; %%ArrivalRate1 represents those passengers who can only take Shanghai Metro Line3 and can take long-route train lines
-ArrivalRate3=ArrivalRate3*bs; %%ArrivalRate3 represents those passengers who can only take Shanghai Metro Line3 and can take short-route train lines
-ArrivalRate2=ArrivalRate2*bs; %%ArrivalRate2 represents those passengers who can only take Shanghai Metro Line4
-ArrivalRateShare=ArrivalRateShare*bs; %%ArrivalRateShare represents those passengers who can both take Shanghai Metro Line3 and Line4, which is only occur in the sharing-corridor.
-%%ArrivalRate, each dimension separately represents passengers' origin station, destination station and its arrival time period (divided every 300 seconds)
-AlightRate1=AlightRate1*bs; %%AlightRate1 represents those passengers who can only take Shanghai Metro Line3 and can take long-route train lines
-AlightRate3=AlightRate3*bs; %%AlightRate3 represents those passengers who can only take Shanghai Metro Line3 and can take short-route train lines
-AlightRate2=AlightRate2*bs; %%AlightRate2 represents those passengers who can only take Shanghai Metro Line4
-AlightRateShare=AlightRateShare*bs; %%AlightRateShare represents those passengers who can both take Shanghai Metro Line3 and Line4, which is only occur in the sharing-corridor.
 
-%%%Initialization for variables of passenger assignment
-Cremain_line1_left=sdpvar(Totaltrain1,Totalstation1);
-Qboard_line1_left=sdpvar(Totaltrain1,Totalstation1-1);
-Qinvehicle_line1_left=sdpvar(Totaltrain1,Totalstation1);
-Qstranded_line1_left=sdpvar(Totaltrain1,Totalstation1-1);
-Qwait_line1_left=sdpvar(Totaltrain1,Totalstation1-1);
-QArrival_Line1_left=sdpvar(Totaltrain1,Totalstation1-1);
-Qalight_line1_left=sdpvar(Totaltrain1,Totalstation1);
+%% Instruction of PassengerDown.mat
+%% ArrivalRate(Totalstation-1,(ETime-STime)/Timestamp): the arrival rate of each specific station (people/second)
+%% ArrivalRate1(Totalstation1-1,(ETime-STime)/Timestamp): those passengers who can only take Line 1.
+%% ArrivalRate1(Totalstation2-1,(ETime-STime)/Timestamp): those passengers who can only take Line 2.
+%% ArrivalRateShare(Sharestation-1,(ETime-STime)/Timestamp): those passengers who can both take Line 1 and Line 2.
+%% AlightRate(Totalstation-1,Totalstation-1,(ETime-STime)/Timestamp): the arrival rate of each specific OD pair (people/second)
+%% AlightRate1(Totalstation1-1,Totalstation1-1,(ETime-STime)/Timestamp): those passengers who can only take Line 1.
+%% AlightRate1(Totalstation2-1,Totalstation2-1,(ETime-STime)/Timestamp): those passengers who can only take Line 2.
+%% AlightRateShare(Sharestation-1,Sharestation-1,(ETime-STime)/Timestamp): those passengers who can both take Line 1 and Line 2.
+%% Rate(Totalstation-1,Totalstation-1): the average proportion of passengers destined for station D among all the passengers boarding at station O during the whole research period.
+%% Rate1(Totalstation1-1,Totalstation1-1): the average proportion for Line 1.
+%% Rate2(Totalstation1-1,Totalstation1-1): the average proportion for Line 2.
+%% Note: For those OD pairs, which station O and station D are all in the collinear corridor, Rate1 = Rate2.
 
-Cremain_line2_left=sdpvar(Totaltrain2,Totalstation2);
-Qboard_line2_left=sdpvar(Totaltrain2,Totalstation2-1);
-Qinvehicle_line2_left=sdpvar(Totaltrain2,Totalstation2);
-Qstranded_line2_left=sdpvar(Totaltrain2,Totalstation2-1);
-Qwait_line2_left=sdpvar(Totaltrain2,Totalstation2-1);
-QArrival_Line2_left=sdpvar(Totaltrain2,Totalstation2-1);
-Qalight_line2_left=sdpvar(Totaltrain2,Totalstation2);
 
 %%Timestamp modelling (To make every train departure time into one time period)
 %%eg. If the departure time of train A is 7:08 a.m.,the variable which represents its departure within 7:02-7:10a.m. will equal 1 and other variables will equal 0. 
-
-[X3_Line1,X3left_Line1,X3right_Line1] = GetTimeInterval2(Departure1,STime,ETime,Timestamp);
-[X3_Line2,X3left_Line2,X3right_Line2] = GetTimeInterval2(Departure2,STime,ETime,Timestamp);
+[X3_Line1,X3left_Line1,X3right_Line1] = GetTimeInterval(Departure1,STime,ETime,Timestamp);
+[X3_Line2,X3left_Line2,X3right_Line2] = GetTimeInterval(Departure2,STime,ETime,Timestamp);
 
 disp("Timestamp modelling finished");
 
