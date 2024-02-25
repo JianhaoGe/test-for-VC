@@ -159,7 +159,7 @@ Qalight_line5_left=sdpvar(Totaltrain5,Totalstation5);
 
 disp("Timestamp modelling finished");
 
-%%Generate Arrival passengers£¨Including two categories£ºThose who only can take Line1 or Line5; Those who can take both Line1 and Line5£©
+%%Generate Arrival passengersÂ£Â¨Including two categoriesÂ£ÂºThose who only can take Line1 or Line5; Those who can take both Line1 and Line5Â£Â©
 [Z1_Line1,Z1_Line1MIN,Z1_Line1MAX,Z2_Line1,Z2_Line1MIN,Z2_Line1MAX,Z1_Line5,Z1_Line5MIN,Z1_Line5MAX,Z2_Line5,Z2_Line5MIN,Z2_Line5MAX,QArrival_Line1,QArrival_Line5]=MakeOnlyArrival(ArrivalRate1,ArrivalRate5,X3_Line1,X3_Line5,Departure1,Departure5,ETime,STime,Timestamp);
 [Z3_Line1,Z3_Line1MIN,Z3_Line1MAX,Z4_Line1,Z4_Line1MIN,Z4_Line1MAX,Z5_Line1,Z5_Line1MIN,Z5_Line1MAX,Z6_Line1,Z6_Line1MIN,Z6_Line1MAX,Z7_Line1,Z7_Line1MIN,Z7_Line1MAX,Z8_Line1,Z8_Line1MIN,Z8_Line1MAX,Z3_Line5,Z3_Line5MIN,Z3_Line5MAX,Z4_Line5,Z4_Line5MIN,Z4_Line5MAX,Z5_Line5,Z5_Line5MIN,Z5_Line5MAX,Z6_Line5,Z6_Line5MIN,Z6_Line5MAX,Z7_Line5,Z7_Line5MIN,Z7_Line5MAX,Z8_Line5,Z8_Line5MIN,Z8_Line5MAX,QArrival_Line1,QArrival_Line5]=MakeShareArrival(ArrivalRateShare,QArrival_Line1,QArrival_Line5,X3_Line1,X3_Line5,Departure1,Departure5,ETime,STime,Timestamp,VCor15);
 disp("Arrival passengers finished");
