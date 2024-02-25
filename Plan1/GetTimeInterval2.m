@@ -1,4 +1,4 @@
-function [X3,X3left,X3right] = GetTimeInterval2(Departure,Stime,Etime,Timestamp)
+function [X3,X3left,X3right] = GetTimeInterval(Departure,Stime,Etime,Timestamp)
 
 s=size(Departure);
 totaltrain=s(1,1);
