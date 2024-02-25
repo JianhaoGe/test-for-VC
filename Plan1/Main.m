@@ -90,7 +90,7 @@ Qalight_line2_left=sdpvar(Totaltrain2,Totalstation2);
 %% Constraints for timetabling
 CTimetable=[
 
-    %% Constraints for time period (Constraint 1-2)
+    %% Constraints for time period (Constraints 1-2)
     Arrival1>=Starttime;
     Departure1>=Starttime;
     Arrival2>=Starttime;
@@ -98,7 +98,7 @@ CTimetable=[
     Departure1<=Endtime;
     Departure2<=Endtime;
     
-    %% Constraints for running time and dwell time (Constraint 3-4)
+    %% Constraints for running time and dwell time (Constraints 3-4)
     Runtime1MIN<=ConRuntime1;
     ConRuntime1<=Runtime1MAX;
     Dwelltime1MIN<=ConDwelltime1;
@@ -114,13 +114,13 @@ CTimetable=[
     Headway2MIN<=ConHeadway2;
     ConHeadway2<=Headway2MAX;
     
-    %% Constraints for VC headway (Constraint 9-13)
+    %% Constraints for VC headway (Constraints 9-13)
     Headway12MIN.*repmat(VCor12,1,Sharestation)+MinVC.*repmat(VCnot12,1,Sharestation)<=ConHeadway12;
     ConHeadway12<=Headway12MAX.*repmat(VCor12,1,Sharestation)+MaxVC.*repmat(VCnot12,1,Sharestation);
     VCor12(:,1)+VCor12(:,2)>=ones(Totaltrain1,1); %% Trains that do not undergo virtual coupling are allowed.
     VCor12+VCnot12==ones(Totaltrain1,2);
     
-    %% Constraints for loop-route train services (Constraint 6-7)
+    %% Constraints for loop-route train services (Constraints 6-7)
     arf1left<=arf1;
     arf1<=arf1right;
     arf2left<=arf2;
@@ -161,26 +161,28 @@ load('PassengerDown.mat');
 %% Note: For those OD pairs, which station O and station D are all in the collinear corridor, Rate1 = Rate2.
 
 
-%%Timestamp modelling (To make every train departure time into one time period)
-%%eg. If the departure time of train A is 7:08 a.m.,the variable which represents its departure within 7:02-7:10a.m. will equal 1 and other variables will equal 0. 
+%% Timestamp modelling (To make every train departure time into one time period)
+%% eg. If the departure time of train A is 7:08 a.m.,the variable which represents its departure within 7:02-7:10a.m. will equal 1 and other variables will equal 0. 
 [X3_Line1,X3left_Line1,X3right_Line1] = GetTimeInterval(Departure1,STime,ETime,Timestamp);
 [X3_Line2,X3left_Line2,X3right_Line2] = GetTimeInterval(Departure2,STime,ETime,Timestamp);
-
 disp("Timestamp modelling finished");
 
-%%Generate Arrival passengers£¨Including two categories£ºThose who only can take Line1 or Line2; Those who can take both Line1 and Line2£©
+%% Generate Arrival passengers(including two categories: those who only can take Line 1 or Line 2; those who can take both Line1 and Line 2)
 [Z1_Line1,Z1_Line1MIN,Z1_Line1MAX,Z2_Line1,Z2_Line1MIN,Z2_Line1MAX,Z1_Line2,Z1_Line2MIN,Z1_Line2MAX,Z2_Line2,Z2_Line2MIN,Z2_Line2MAX,QArrival_Line1,QArrival_Line2]=MakeOnlyArrival(ArrivalRate1,ArrivalRate2,X3_Line1,X3_Line2,Departure1,Departure2,ETime,STime,Timestamp);
 [Z3_Line1,Z3_Line1MIN,Z3_Line1MAX,Z4_Line1,Z4_Line1MIN,Z4_Line1MAX,Z2_Line1,Z2_Line1MIN,Z2_Line1MAX,Z6_Line1,Z6_Line1MIN,Z6_Line1MAX,Z7_Line1,Z7_Line1MIN,Z7_Line1MAX,Z8_Line1,Z8_Line1MIN,Z8_Line1MAX,Z3_Line2,Z3_Line2MIN,Z3_Line2MAX,Z4_Line2,Z4_Line2MIN,Z4_Line2MAX,Z2_Line2,Z2_Line2MIN,Z2_Line2MAX,Z6_Line2,Z6_Line2MIN,Z6_Line2MAX,Z7_Line2,Z7_Line2MIN,Z7_Line2MAX,Z8_Line2,Z8_Line2MIN,Z8_Line2MAX,QArrival_Line1,QArrival_Line2]=MakeShareArrival(ArrivalRateShare,QArrival_Line1,QArrival_Line2,X3_Line1,X3_Line2,Departure1,Departure2,ETime,STime,Timestamp,VCor12);
 disp("Arrival passengers finished");
-%%Generate remaining capacity
+
+%% Generate remaining capacity
 Cremain_line1_right = MakeRemainCapacityinVehicle(Cmax,Qinvehicle_line1_left);
 Cremain_line2_right = MakeRemainCapacityinVehicle(Cmax,Qinvehicle_line2_left);
 disp("Remaining capacity finished");
-%%Generate boarding passengers
+
+%% Generate boarding passengers
 Qboard_line1_right = MakeBoard(Qwait_line1_left,Cremain_line1_left);
 Qboard_line2_right = MakeBoard(Qwait_line2_left,Cremain_line2_left);
 disp("Boarding passengers finished");
-%%Generate in-vehicle passengers
+
+%% Generate in-vehicle passengers
 Qinvehicle_line1_right = Makeinvehicle(Qboard_line1_left,Qalight_line1_left);
 [Qinvehicle_line2_right,ZZ1,ZZ1max,ZZ1min,ZZ2,ZZ2max,ZZ2min] = Makeinvehicle2(Qboard_line2_left,Qalight_line2_left,arf3);
 disp("In-vehicle passengers finished");
