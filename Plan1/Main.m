@@ -1,29 +1,42 @@
-%% Initialization.
-%%In this code, Line1 presents the long-route train line of Shanghai Metro Line3;
-%%Line 5 presents the loop-route train line of Shanghai Metro Line4;
-TrainCapacity=340*6;
-fullloadrate=1.2;%Maximum allowable full load rate is 120%
+%% This program is used to solve the model of Plan I, including 2 route train lines.
+%% Line 1 presents the long-route train line of Shanghai Metro Line 3;
+%% Line 2 presents the loop-route train line of Shanghai Metro Line 4.
+
+%% Input （Values that need to be independently defined)
+
+%% Value:
+%% TrainCapacity -- The standard capacity of trains;
+%% fullloadrate  -- The maximum allowable full load rate of a train;
+%% M             -- A sufficiently large constant number;
+%% MinD          -- Minimum dwelltime time coefficient;
+%% MaxD          -- Maximum dwelltime time coefficient;
+%% MinH          -- Minimum headway time of successive trains;
+%% MaxH          -- Maximum headway time of successive trains;
+%% MinVC         -- Minimum headway time of successive trains of different lines when they are virtual coupled;
+%% MaxVC         -- Maximum headway time of successive trains of different lines when they are virtual coupled;
+%% Totaltrain1   -- The total number of Line 1;
+%% Totalstation1 -- The total station number of Line 1;
+%% Totaltrain2   -- The total number of Line 2;
+%% Totalstation2 -- The total station number of Line 2;
+%% Sharestation  -- The number of shared stations;
+
+%% Matrix:
+%% MinR1(Totalstation1-1,1)      -- The minimum running time of each section of Line 1;
+%% MaxR1(Totalstation1-1,1)      -- The maximum running time of each section of Line 1;
+%% Dwelltime1(Totalstation1,1)   -- The standard dwelltime of each station of Line 1;
+%% MinR2(Totalstation2-1,1)      -- The minimum running time of each section of Line 2;
+%% MaxR2(Totalstation2-1,1)      -- The maximum running time of each section of Line 2;
+%% Dwelltime2(Totalstation2,1)   -- The standard dwelltime of each station of Line 2;
+%% Line1(Totalstation1,1)        -- The station name of Line 1;
+%% Line2(Totalstation2,1)        -- The station name of Line 2;
+%% CommonStopSet(Sharestation,1) -- The station name of shared stations.
+
 Cmax=fullloadrate*TrainCapacity;%Maximum train capacity
-
-M=99999;
-
 
 load('Runningtime.mat');%Loading runningtime data
 load('Dwelltime.mat');%Loading dwelltime data
-MinD=1;%Minimum dwelltime time coefficient
-MaxD=1.2;%Maximum dwelltime time coefficient
-MinH=120;%Minimum headway time of successive trains (seconds)
-MaxH=300;%Maximum headway time of successive trains (seconds)
-
-MinVC=30;%Minimum headway time of successive trains of different lines when they are virtual coupled (seconds)
 
 %Initialization of Line1: long-route train line of Shanghai Metro Line3;
-Line1=Runningtime(Runningtime.Planning==1,:);%Select stations of Line1
-Totaltrain1=20;%Define the total train number of Line1
-Totalstation1=length(Line1.ID)+1;%Calculate the total station number of Line1
-MinR1=fix(Line1.Time)*60+mod(Line1.Time*100,100);%Calculate the minimum running time of each section of Line1 (seconds)
-MaxR1=MinR1*1.2;%Calculate the maximum running time of each section of Line1 (seconds)
-Dwelltime1=Dwelltime(Dwelltime.Planning==1,:);%Select train dwelltime of Line1
 MinD1=Dwelltime1.Time*100*MinD;%Calculate the minimum dwelltime at each station of Line 1
 MaxD1=MinD1*MaxD;%Calculate the maximum dwelltime at each station of Line 1
 
