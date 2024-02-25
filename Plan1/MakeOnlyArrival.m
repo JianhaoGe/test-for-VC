@@ -1,46 +1,55 @@
-function [Z1_Line1,Z1_Line1MIN,Z1_Line1MAX,Z2_Line1,Z2_Line1MIN,Z2_Line1MAX,Z1_Line5,Z1_Line5MIN,Z1_Line5MAX,Z2_Line5,Z2_Line5MIN,Z2_Line5MAX,QArrival_Line1,QArrival_Line5,QArrival11,QArrival51,Waittime11,Waittime51]=MakeOnlyArrival(ArrivalRate1,ArrivalRate5,X3_Line1,X3_Line5,Departure1,Departure5,ETime,STime,Timestamp)
+function [Z1_Line1,Z1_Line1MIN,Z1_Line1MAX,Z2_Line1,Z2_Line1MIN,Z2_Line1MAX,Z1_Line2,Z1_Line2MIN,Z1_Line2MAX,Z2_Line2,Z2_Line2MIN,Z2_Line2MAX,QArrival_Line1,QArrival_Line2,QArrival11,QArrival21,Waittime11,Waittime21]=MakeOnlyArrival(ArrivalRate1,ArrivalRate2,X3_Line1,X3_Line2,Departure1,Departure2,ETime,STime,Timestamp)
+%% Due to linearization in Constraints (33-34,37-38), PCM method is extensively used here.
+
 M=99999;
 s1=size(Departure1);
 totaltrain1=s1(1,1);
 totalstation1=s1(1,2);
-s5=size(Departure5);
-totaltrain5=s5(1,1);
-totalstation5=s5(1,2);
+s2=size(Departure2);
+totaltrain2=s2(1,1);
+totalstation2=s2(1,2);
+
+%% Z1_Line1 is used to show the headway between the train and its front train of Line 1 if the train arrives at the station within the specific time period.
+%% Z1_Line2 is used to show the headway between the train and its front train of Line 2 if the train arrives at the station within the specific time period.
+%% Z2_Line1 and Z2_Line2 are auxiliary variables. 
+
 
 Z1_Line1=sdpvar(totaltrain1*(totalstation1-1),(ETime-STime)/Timestamp);
 Z1_Line1MIN=-M*X3_Line1;
 Z1_Line1MAX=M*X3_Line1;
 
-Z1_Line5=sdpvar(totaltrain5*(totalstation5-1),(ETime-STime)/Timestamp);
-Z1_Line5MIN=-M*X3_Line5;
-Z1_Line5MAX=M*X3_Line5;
+Z1_Line2=sdpvar(totaltrain2*(totalstation2-1),(ETime-STime)/Timestamp);
+Z1_Line2MIN=-M*X3_Line2;
+Z1_Line2MAX=M*X3_Line2;
 
 Z2_Line1=sdpvar(totaltrain1*(totalstation1-1),(ETime-STime)/Timestamp);
 Z2_Line1MIN=-M*(1-X3_Line1);
 Z2_Line1MAX=M*(1-X3_Line1);
 
-Z2_Line5=sdpvar(totaltrain5*(totalstation5-1),(ETime-STime)/Timestamp);
-Z2_Line5MIN=-M*(1-X3_Line5);
-Z2_Line5MAX=M*(1-X3_Line5);
+Z2_Line2=sdpvar(totaltrain2*(totalstation2-1),(ETime-STime)/Timestamp);
+Z2_Line2MIN=-M*(1-X3_Line2);
+Z2_Line2MAX=M*(1-X3_Line2);
 
-
+%% The following variables are used to analyze the passenger service quality, which are not constrained in the model.
 QArrival_Line1=sdpvar(totaltrain1,(totalstation1-1));
-QArrival_Line5=sdpvar(totaltrain5,(totalstation5-1));
+QArrival_Line2=sdpvar(totaltrain2,(totalstation2-1));
 QArrival11=sdpvar(totaltrain1,(totalstation1-1));
 Waittime11=sdpvar(totaltrain1,(totalstation1-1));
-QArrival51=sdpvar(totaltrain5,(totalstation5-1));
-Waittime51=sdpvar(totaltrain5,(totalstation5-1));
+QArrival21=sdpvar(totaltrain2,(totalstation2-1));
+Waittime21=sdpvar(totaltrain2,(totalstation2-1));
 
-%%%According to the train line set, obtain the number of arriving passengers who can only take a certain train
+%%%According to the plan, obtain the number of arriving passengers who can only take a certain train
 for i=1:totaltrain1
     cc=(i-1)*(totalstation1-1);
     for k=1:totalstation1-1
         cc=cc+1;
         for m=1:(ETime-STime)/Timestamp
             if i==1
-                Z1_Line1(cc,m)=Z2_Line1(cc,m)+180;%The number of arriving passengers of the first train obtains the passenger flow three minutes before the first train arrives at the station
+                %% The number of arriving passengers of the first train obtains the passenger flow three minutes before the first train arrives at the station
+                %% Z1_Line1(cc,m)=180.
             else 
-                Z1_Line1(cc,m)=Z2_Line1(cc,m)+Departure1(i,k)-Departure1(i-1,k);
+                %% Z1_Line1(cc,m)=Departure1(i,k)-Departure1(i-1,k).
+                %% Note: the code is not correct.
             end
             if m==1
                 QArrival_Line1(i,k)=ArrivalRate1(k,m)*Z1_Line1(cc,m);
@@ -57,23 +66,24 @@ end
 
 
 cc=0;
-for i=1:totaltrain5
-    for k=1:totalstation5-1
+for i=1:totaltrain2
+    for k=1:totalstation2-1
         cc=cc+1;
         for m=1:(ETime-STime)/Timestamp
             if i==1
-                Z1_Line5(cc,m)=Z2_Line5(cc,m)+180;
+                %% Z1_Line2(cc,m)=180.
             else 
-                Z1_Line5(cc,m)=Z2_Line5(cc,m)+Departure5(i,k)-Departure5(i-1,k);
+                %% Z1_Line2(cc,m)=Departure2(i,k)-Departure2(i-1,k);
+                %% Note: the code is not correct.
             end
             if m==1
-                QArrival_Line5(i,k)=ArrivalRate5(k,m)*Z1_Line5(cc,m);
-                QArrival51(i,k)=ArrivalRate5(k,m)*Z1_Line5(cc,m);
-                Waittime51(i,k)=ArrivalRate5(k,m)*Z1_Line5(cc,m)*Z1_Line5(cc,m)/2;
+                QArrival_Line2(i,k)=ArrivalRate2(k,m)*Z1_Line2(cc,m);
+                QArrival21(i,k)=ArrivalRate2(k,m)*Z1_Line2(cc,m);
+                Waittime21(i,k)=ArrivalRate2(k,m)*Z1_Line2(cc,m)*Z1_Line2(cc,m)/2;
             else
-                QArrival_Line5(i,k)=QArrival_Line5(i,k)+ArrivalRate5(k,m)*Z1_Line5(cc,m);
-                QArrival51(i,k)=QArrival51(i,k)+ArrivalRate5(k,m)*Z1_Line5(cc,m);
-                Waittime51(i,k)=Waittime51(i,k)+ArrivalRate5(k,m)*Z1_Line5(cc,m)*Z1_Line5(cc,m)/2;
+                QArrival_Line2(i,k)=QArrival_Line2(i,k)+ArrivalRate2(k,m)*Z1_Line2(cc,m);
+                QArrival21(i,k)=QArrival21(i,k)+ArrivalRate2(k,m)*Z1_Line2(cc,m);
+                Waittime21(i,k)=Waittime21(i,k)+ArrivalRate2(k,m)*Z1_Line2(cc,m)*Z1_Line2(cc,m)/2;
             end
         end
     end
