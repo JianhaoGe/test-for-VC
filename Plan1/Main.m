@@ -53,25 +53,25 @@ Departure2=intvar(Totaltrain2,Totalstation2);
 [Runtime2MAX,ConRuntime2,Runtime2MIN]=MakeRuntimeContraints(Arrival2,Departure2,MinR2,MaxR2);
 [Dwelltime2MAX,ConDwelltime2,Dwelltime2MIN]=MakeDwelltimeContraints(Arrival2,Departure2,MinD2,MaxD2);
 
-%%Headway variables
-%%Headway variables for trains of the same line
+%% Headway variables
+%% Headway variables for trains of the same line
 [Headway1MAX,ConHeadway1,Headway1MIN]=MakeSameHeadwayConstraints(Line1,Arrival1,Departure1,MinH,MaxH);
 [Headway2MAX,ConHeadway2,Headway2MIN]=MakeSameHeadwayConstraints(Line2,Arrival2,Departure2,MinH,MaxH);
 
-%%Headway variables for trains of different lines and general the VC variable
+%% Headway variables for trains of different lines and general the VC variable
 [Headway12MAX,ConHeadway12,Headway12MIN,VCor12,VCnot12]=MakeDifferentLineHeadwayConstraints(Line1,Arrival1,Departure1,Line2,Arrival2,Departure2,MinH,MaxH,CommonStopSet2);
 
-%%variables to form loop train services for Line2
-%%Generate the connection matrix for loop train services
+%% variables to form loop train services for Line2
+%% Generate the connection matrix for loop train services
 [arf1,arf1left,arf1right,arf2,arf2left,arf2right,arf3,arf3left,arf3right,ConLink2,AllRunningtime2]=MakeLink(Arrival2);
 
-%%Generate loop-route variables for Line2
+%% Generate loop-route variables for Line2
 [L1,L1min,L1max]=MakeLinkContraints(arf3,Arrival2);
 
-%%Constraints for timetabling
+%% Constraints for timetabling
 CTimetable=[
 
-    %%Constraints for time period (Constraint 1-2)
+    %% Constraints for time period (Constraint 1-2)
     Arrival1>=Starttime;
     Departure1>=Starttime;
     Arrival2>=Starttime;
@@ -79,7 +79,7 @@ CTimetable=[
     Departure1<=Endtime;
     Departure2<=Endtime;
     
-    %%Constraints for running time and dwell time (Constraint 3-4)
+    %% Constraints for running time and dwell time (Constraint 3-4)
     Runtime1MIN<=ConRuntime1;
     ConRuntime1<=Runtime1MAX;
     Dwelltime1MIN<=ConDwelltime1;
@@ -89,19 +89,19 @@ CTimetable=[
     Dwelltime2MIN<=ConDwelltime2;
     ConDwelltime2<=Dwelltime2MAX;
     
-    %%Constraints for train headway (Constraint 2)
+    %% Constraints for train headway (Constraint 2)
     Headway1MIN<=ConHeadway1;
     ConHeadway1<=Headway1MAX;
     Headway2MIN<=ConHeadway2;
     ConHeadway2<=Headway2MAX;
     
-    %%Constraints for VC headway (Constraint 9-13)
+    %% Constraints for VC headway (Constraint 9-13)
     Headway12MIN.*VCor12All+MinVC.*VCnot12All<=ConHeadway12;
     ConHeadway12<=Headway12MAX.*VCor12All+MaxVC.*VCnot12All;
     VCor12(:,1)+VCor12(:,2)>=ones(Totaltrain1,1); %% Trains that do not undergo virtual coupling are allowed.
     VCor12+VCnot12==ones(Totaltrain1,2);
     
-    %%Constraints for loop-route train services (Constraint 6-8)
+    %% Constraints for loop-route train services (Constraint 6-8)
     arf1left<=arf1;
     arf1<=arf1right;
     arf2left<=arf2;
