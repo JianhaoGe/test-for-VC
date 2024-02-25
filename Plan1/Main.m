@@ -1,4 +1,3 @@
-clc;close all;clear all;
 %% Initialization.
 %%In this code, Line1 presents the long-route train line of Shanghai Metro Line3;
 %%Line 5 presents the loop-route train line of Shanghai Metro Line4;
