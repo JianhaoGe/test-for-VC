@@ -4,7 +4,7 @@ s=size(Arrival2);
 num_train=s(1,1);
 L1=intvar(num_train,num_train,'full');
 
-%% If train i and j of Line 2 are set to be connected, they have the same arrival and departure time at the terminal station (the ending station of the front train and the starting station of the rear train).
+%% According to the function of MakeLink, if train i and j of Line 2 are set to be connected, they have the same arrival and departure time at the terminal station (the ending station of the front train and the starting station of the rear train).
 L1min=-M*(1-arf3);
 L1max=M*(1-arf3);
 
