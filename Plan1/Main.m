@@ -25,6 +25,7 @@
 %% STime         -- The starting point of passenger OD data;
 %% ETime         -- The ending point of passenger OD data;
 %% Timestamp     -- The length of a time inteval (The granularity of passenger OD data);
+%% Fcommonstop   -- The number of the first station in the collinear corridor;
 %% Note: Here, Totaltrain1 = Totaltrain2.
 
 %% Matrix:
@@ -169,7 +170,7 @@ disp("Timestamp modelling finished");
 
 %% Generate Arrival passengers(including two categories: those who only can take Line 1 or Line 2; those who can take both Line1 and Line 2)
 [Z1_Line1,Z1_Line1MIN,Z1_Line1MAX,Z2_Line1,Z2_Line1MIN,Z2_Line1MAX,Z1_Line2,Z1_Line2MIN,Z1_Line2MAX,Z2_Line2,Z2_Line2MIN,Z2_Line2MAX,QArrival_Line1,QArrival_Line2]=MakeOnlyArrival(ArrivalRate1,ArrivalRate2,X3_Line1,X3_Line2,Departure1,Departure2,ETime,STime,Timestamp);
-[Z3_Line1,Z3_Line1MIN,Z3_Line1MAX,Z4_Line1,Z4_Line1MIN,Z4_Line1MAX,Z2_Line1,Z2_Line1MIN,Z2_Line1MAX,Z6_Line1,Z6_Line1MIN,Z6_Line1MAX,Z7_Line1,Z7_Line1MIN,Z7_Line1MAX,Z8_Line1,Z8_Line1MIN,Z8_Line1MAX,Z3_Line2,Z3_Line2MIN,Z3_Line2MAX,Z4_Line2,Z4_Line2MIN,Z4_Line2MAX,Z2_Line2,Z2_Line2MIN,Z2_Line2MAX,Z6_Line2,Z6_Line2MIN,Z6_Line2MAX,Z7_Line2,Z7_Line2MIN,Z7_Line2MAX,Z8_Line2,Z8_Line2MIN,Z8_Line2MAX,QArrival_Line1,QArrival_Line2]=MakeShareArrival(ArrivalRateShare,QArrival_Line1,QArrival_Line2,X3_Line1,X3_Line2,Departure1,Departure2,ETime,STime,Timestamp,VCor12);
+[Z3_Line1,Z3_Line1MIN,Z3_Line1MAX,Z4_Line1,Z4_Line1MIN,Z4_Line1MAX,Z2_Line1,Z2_Line1MIN,Z2_Line1MAX,Z6_Line1,Z6_Line1MIN,Z6_Line1MAX,Z7_Line1,Z7_Line1MIN,Z7_Line1MAX,Z8_Line1,Z8_Line1MIN,Z8_Line1MAX,Z3_Line2,Z3_Line2MIN,Z3_Line2MAX,Z4_Line2,Z4_Line2MIN,Z4_Line2MAX,Z2_Line2,Z2_Line2MIN,Z2_Line2MAX,Z6_Line2,Z6_Line2MIN,Z6_Line2MAX,Z7_Line2,Z7_Line2MIN,Z7_Line2MAX,Z8_Line2,Z8_Line2MIN,Z8_Line2MAX,QArrival_Line1,QArrival_Line2]=MakeShareArrival(ArrivalRateShare,QArrival_Line1,QArrival_Line2,X3_Line1,X3_Line2,Departure1,Departure2,ETime,STime,Timestamp,VCor12,Sharestation,Fcommonstop);
 disp("Arrival passengers finished");
 
 %% Generate remaining capacity
