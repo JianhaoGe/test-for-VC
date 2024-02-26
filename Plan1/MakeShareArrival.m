@@ -36,6 +36,7 @@ Z4_Line2MAX=M*(1-X3_Line2(za2,:));
 
 %% Note: codes omitted.
 
+%% According to Constraints (40-42)
 %% If it is virtually coupled with its front train, the number of arriving passenger needs to add Z5 as it is shown in Constraint 21.
 %% If it is virtually coupled with its rear train, the number of arriving passenger needs to add Z7.
 %% The decision variable is VC_Line1 and VC_Line2.
