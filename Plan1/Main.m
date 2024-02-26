@@ -186,7 +186,7 @@ disp("Boarding passengers finished");
 
 %% Generate in-vehicle passengers
 Qinvehicle_line1_right = Makeinvehicle(Qboard_line1_left,Qalight_line1_left);
-[Qinvehicle_line2_right,ZZ1,ZZ1max,ZZ1min,ZZ2,ZZ2max,ZZ2min] = Makeinvehicle2(Qboard_line2_left,Qalight_line2_left,arf3);
+[Qinvehicle_line2_right,ZZ1,ZZ1max,ZZ1min,ZZ2,ZZ2max,ZZ2min] = Makeinvehicleloop(Qboard_line2_left,Qalight_line2_left,arf3);
 disp("In-vehicle passengers finished");
 
 %%Generate stranded passengers
