@@ -179,23 +179,26 @@ Cremain_line1_right = MakeRemainCapacityinVehicle(Cmax,Qinvehicle_line1_left);
 Cremain_line2_right = MakeRemainCapacityinVehicle(Cmax,Qinvehicle_line2_left);
 disp("Remaining capacity finished");
 
-%% Generate boarding passengers
-Qboard_line1_right = MakeBoard(Qwait_line1_left,Cremain_line1_left);
-Qboard_line2_right = MakeBoard(Qwait_line2_left,Cremain_line2_left);
+%% Generate boarding passengers (It is programmed according to Constraint 22. However, because of its low efficiency and nonlinearity, it has been optimized to Constraints (43-44).
+%% Qboard_line1_right = MakeBoard(Qwait_line1_left,Cremain_line1_left);
+%% Qboard_line2_right = MakeBoard(Qwait_line2_left,Cremain_line2_left);
 disp("Boarding passengers finished");
 
 %% Generate in-vehicle passengers
 Qinvehicle_line1_right = Makeinvehicle(Qboard_line1_left,Qalight_line1_left);
 [Qinvehicle_line2_right,ZZ1,ZZ1max,ZZ1min,ZZ2,ZZ2max,ZZ2min] = Makeinvehicle2(Qboard_line2_left,Qalight_line2_left,arf3);
 disp("In-vehicle passengers finished");
+
 %%Generate stranded passengers
 Qstranded_line1_right = Makestranded(Qwait_line1_left,Qboard_line1_left);
 Qstranded_line2_right = Makestranded(Qwait_line2_left,Qboard_line2_left);
 disp("Stranded passengers finished");
+
 %%Generate waiting passengers
 Qwait_line1_right = Makewait(QArrival_Line1_left,Qstranded_line1_left);
 Qwait_line2_right = Makewait(QArrival_Line2_left,Qstranded_line2_left);
 disp("Waiting passengers finished");
+
 %%Generate alighting passengers
 [Qalight_Line1_right,Qalight_Line2_right,ZZ3,ZZ3min,ZZ3max,ZZ4,ZZ4min,ZZ4max]=Makealight2(Departure1,Qboard_line1_left,Rate1,Departure2,Qboard_line2_left,Rate2,arf3);
 disp("Alighting passengers finished");
@@ -249,6 +252,7 @@ Calight=[Qalight_line1_left==Qalight_Line1_right;
 CCremain=[Cremain_line1_left==Cremain_line1_right;
     Cremain_line2_left==Cremain_line2_right;];
 Cboard=[
+    %% Constraints (43-44)
     Qboard_line1_left<=Qwait_line1_left;
     Qboard_line2_left<=Qwait_line2_left;
     Qboard_line1_left<=Cremain_line1_left(:,1:Totalstation1-1);
