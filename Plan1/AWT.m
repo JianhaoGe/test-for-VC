@@ -1,4 +1,4 @@
-%% This code is used to calculate passengers' average waiting time. 
+%% This code is used to calculate passengers' average waiting time after Main.m. 
 
 Waittime11=double(Waittime11);
 Waittime12=double(Waittime12);
