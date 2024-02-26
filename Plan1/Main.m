@@ -162,6 +162,9 @@ load('PassengerDown.mat');
 %% Rate2(Totalstation1-1,Totalstation1-1): the average proportion for Line 2.
 %% Note: For those OD pairs, which station O and station D are all in the collinear corridor, Rate1 = Rate2.
 
+%% In this part, we define the number of all passengers as two parts: left and right. 
+%% The right part serves as the calculation result, while the left part is responsible for participating in the calculation.
+%% In the final constraint setting, it is required that left and right are equal to avoid the problem of conflicting constraints due to code order.
 
 %% Timestamp modelling (To make every train departure time into one time period)
 %% eg. If the departure time of train A is 7:08 a.m.,the variable which represents its departure within 7:02-7:10a.m. will equal 1 and other variables will equal 0. 
@@ -171,7 +174,7 @@ disp("Timestamp modelling finished");
 
 %% Generate Arrival passengers(including two categories: those who only can take Line 1 or Line 2; those who can take both Line1 and Line 2)
 [Z1_Line1,Z1_Line1MIN,Z1_Line1MAX,Z2_Line1,Z2_Line1MIN,Z2_Line1MAX,Z1_Line2,Z1_Line2MIN,Z1_Line2MAX,Z2_Line2,Z2_Line2MIN,Z2_Line2MAX,QArrival_Line1,QArrival_Line2]=MakeOnlyArrival(ArrivalRate1,ArrivalRate2,X3_Line1,X3_Line2,Departure1,Departure2,ETime,STime,Timestamp);
-[Z3_Line1,Z3_Line1MIN,Z3_Line1MAX,Z4_Line1,Z4_Line1MIN,Z4_Line1MAX,Z2_Line1,Z2_Line1MIN,Z2_Line1MAX,Z6_Line1,Z6_Line1MIN,Z6_Line1MAX,Z7_Line1,Z7_Line1MIN,Z7_Line1MAX,Z8_Line1,Z8_Line1MIN,Z8_Line1MAX,Z3_Line2,Z3_Line2MIN,Z3_Line2MAX,Z4_Line2,Z4_Line2MIN,Z4_Line2MAX,Z2_Line2,Z2_Line2MIN,Z2_Line2MAX,Z6_Line2,Z6_Line2MIN,Z6_Line2MAX,Z7_Line2,Z7_Line2MIN,Z7_Line2MAX,Z8_Line2,Z8_Line2MIN,Z8_Line2MAX,QArrival_Line1,QArrival_Line2]=MakeShareArrival(ArrivalRateShare,QArrival_Line1,QArrival_Line2,X3_Line1,X3_Line2,Departure1,Departure2,ETime,STime,Timestamp,VCor12,Sharestation,Fcommonstop1,Fcommonstop2);
+[Z3_Line1,Z3_Line1MIN,Z3_Line1MAX,Z4_Line1,Z4_Line1MIN,Z4_Line1MAX,Z5_Line1,Z5_Line1MIN,Z5_Line1MAX,Z6_Line1,Z6_Line1MIN,Z6_Line1MAX,Z7_Line1,Z7_Line1MIN,Z7_Line1MAX,Z8_Line1,Z8_Line1MIN,Z8_Line1MAX,Z3_Line2,Z3_Line2MIN,Z3_Line2MAX,Z4_Line2,Z4_Line2MIN,Z4_Line2MAX,Z2_Line2,Z2_Line2MIN,Z2_Line2MAX,Z6_Line2,Z6_Line2MIN,Z6_Line2MAX,Z7_Line2,Z7_Line2MIN,Z7_Line2MAX,Z8_Line2,Z8_Line2MIN,Z8_Line2MAX,QArrival_Line1,QArrival_Line2]=MakeShareArrival(ArrivalRateShare,QArrival_Line1,QArrival_Line2,X3_Line1,X3_Line2,Departure1,Departure2,ETime,STime,Timestamp,VCor12,Sharestation,Fcommonstop1,Fcommonstop2);
 disp("Arrival passengers finished");
 
 %% Generate remaining capacity
@@ -189,18 +192,18 @@ Qinvehicle_line1_right = Makeinvehicle(Qboard_line1_left,Qalight_line1_left);
 [Qinvehicle_line2_right,ZZ1,ZZ1max,ZZ1min,ZZ2,ZZ2max,ZZ2min] = Makeinvehicleloop(Qboard_line2_left,Qalight_line2_left,arf3);
 disp("In-vehicle passengers finished");
 
-%%Generate stranded passengers
+%% Generate stranded passengers
 Qstranded_line1_right = Makestranded(Qwait_line1_left,Qboard_line1_left);
 Qstranded_line2_right = Makestranded(Qwait_line2_left,Qboard_line2_left);
 disp("Stranded passengers finished");
 
-%%Generate waiting passengers
+%% Generate waiting passengers
 Qwait_line1_right = Makewait(QArrival_Line1_left,Qstranded_line1_left);
 Qwait_line2_right = Makewait(QArrival_Line2_left,Qstranded_line2_left);
 disp("Waiting passengers finished");
 
-%%Generate alighting passengers
-[Qalight_Line1_right,Qalight_Line2_right,ZZ3,ZZ3min,ZZ3max,ZZ4,ZZ4min,ZZ4max]=Makealight2(Departure1,Qboard_line1_left,Rate1,Departure2,Qboard_line2_left,Rate2,arf3);
+%% Generate alighting passengers
+[Qalight_Line1_right,Qalight_Line2_right,ZZ3,ZZ3min,ZZ3max,ZZ4,ZZ4min,ZZ4max]=MakeAlight(Departure1,Qboard_line1_left,Rate1,Departure2,Qboard_line2_left,Rate2,arf3);
 disp("Alighting passengers finished");
 
 %%Constraints for passenger assignment
@@ -226,10 +229,10 @@ CArrival=[Z1_Line1MIN<=Z1_Line1;
     Z4_Line1<=Z4_Line1MAX;
     Z4_Line2MIN<=Z4_Line2;
     Z4_Line2<=Z4_Line2MAX;
-    Z2_Line1MIN<=Z2_Line1;
-    Z2_Line1<=Z2_Line1MAX;
-    Z2_Line2MIN<=Z2_Line2;
-    Z2_Line2<=Z2_Line2MAX;
+    Z5_Line1MIN<=Z5_Line1;
+    Z5_Line1<=Z5_Line1MAX;
+    Z5_Line2MIN<=Z5_Line2;
+    Z5_Line2<=Z5_Line2MAX;
     Z6_Line1MIN<=Z6_Line1;
     Z6_Line1<=Z6_Line1MAX;
     Z6_Line2MIN<=Z6_Line2;
@@ -272,7 +275,7 @@ Cwait=[Qwait_line1_left==Qwait_line1_right;
     Qwait_line2_left==Qwait_line2_right;];
 disp("Constraints for passenger assignment finished");
 
-%% Objective function
+%% All the constraints are shown 
 C=[
     CTimetable;
     CTimestamp;
@@ -285,6 +288,7 @@ C=[
     Cwait;
     ];
 
+%% Objective functions (Equation 51)
 obj=sum(sum(Qstranded_line1_left))+sum(sum(Qstranded_line2_left));
 ops = sdpsettings('solver','gurobi');
 result=solvesdp(C,obj,ops);
