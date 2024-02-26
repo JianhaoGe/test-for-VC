@@ -8,7 +8,7 @@ totaltrain2=s2(1,1);
 totalstation2=s2(1,2);
 CommonStop=Sharestation-1;
 
-%% Generate train intervals between Line 1 and Line 2 at stations on the collinear corridor with the same method as MakeOnlyArrival.
+%% Generate train intervals between Line 1 and Line 2 at stations on the collinear corridor with the same method as MakeOnlyArrival, according to Constraints (35-36,39)
 
 Z3_Line1=sdpvar(totaltrain1*(CommonStop),(ETime-STime)/Timestamp);
 za1=[];
