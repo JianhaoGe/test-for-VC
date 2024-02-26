@@ -11,7 +11,7 @@
     Calculate the average full load rate of trains in all sections        --- AFLR.m
     Calculate the average waiting time of passengers                      --- AWT.m
     Capacity utilization of the train timetable of VC referring to UIC406 --- UIC406.m
-    Desensitized data input                                               --- Passenger.mat; Runningtime.mat; Dwelltime.mat
+    Desensitized data input                                               --- Passenger.mat; SampleInput.mat
 
 
 ## Instructions of main constraint methods used in the pseudocodes:

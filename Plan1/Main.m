@@ -23,7 +23,7 @@
 %% Endtime       -- The ending point of research time period;
 %% MinLink       -- The minimum total times of connected train service pairs of Line 2;
 %% STime         -- The starting point of passenger OD data;
-%% ETime         -- The ending point of passenger OD data;
+%% ETime      1   -- The ending point of passenger OD data;
 %% Timestamp     -- The length of a time inteval (The granularity of passenger OD data);
 %% Fcommonstop1  -- The sequence of the first station in the collinear corridor for Line 1;
 %% Fcommonstop2  -- The sequence of the first station in the collinear corridor for Line 2;
@@ -39,6 +39,8 @@
 %% Line1(Totalstation1,1)        -- The station name of Line 1;
 %% Line2(Totalstation2,1)        -- The station name of Line 2;
 %% CommonStopSet(Sharestation,1) -- The station name of shared stations.
+
+load("SampleInput.mat");
 
 Cmax=fullloadrate*TrainCapacity; %Maximum train capacity
 MinD1=Dwelltime1*MinD; %Calculate the minimum dwelltime at each station of Line 1
